@@ -77,15 +77,6 @@ const AboutSection = () => {
                   Value to the potato industry in Rwanda by offering the best
                   and affordable snacks to the consumers of the region.
                 </p>
-                <p className="text-primary-foreground/90 leading-relaxed font-barlow">
-                  Our goal is to become the best employer by providing both
-                  direct and indirect job opportunities while prioritizing
-                  personal development for our employees. We aim to educate
-                  local potato farmers to enhance their businesses. Ultimately,
-                  we seek to add value to the potato industry in Rwanda by
-                  offering the highest quality and most affordable snacks to
-                  consumers in the region.
-                </p>
               </div>
             </div>
           </motion.div>

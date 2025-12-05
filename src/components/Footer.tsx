@@ -96,10 +96,9 @@ const Footer = () => {
               <div className="text-white/80 space-y-1 text-sm leading-relaxed">
                 <p className="font-semibold text-white">Hollanda FairFoods LTD</p>
                 <p>Warehouse: KG 173 st, Kigali- Remera</p>
-                <p>Opposite Grand Legacy Hotel Main office: KG 622 st, House 3</p>
                 <p>Factory: Musanze Gyanika Road</p>
                 <p className="pt-2">Tel: +250786050540</p>
-                <p>Email: customerservice@hollandafairfoods.com</p>
+                <p>Email: info@hollandafairfoods.com</p>
               </div>
             </motion.div>
 

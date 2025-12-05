@@ -12,8 +12,22 @@ const BlogPost = () => {
 
     const { data: post, isLoading, error } = useQuery({
         queryKey: ['blog-post', slug],
-        queryFn: () => client.fetch<BlogPostType>(blogPostQuery, { slug }),
+        queryFn: async () => {
+            try {
+                const fetchedPost = await client.fetch<BlogPostType>(blogPostQuery, { slug });
+                console.log('✅ Fetched post from Sanity:', fetchedPost?.title);
+                return fetchedPost;
+            } catch (err) {
+                console.error('❌ Error fetching post from Sanity:', err);
+                throw err;
+            }
+        },
         enabled: !!slug,
+        staleTime: 0,
+        cacheTime: 0,
+        refetchOnMount: true,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
     })
 
     if (isLoading) {

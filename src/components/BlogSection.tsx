@@ -15,7 +15,7 @@ interface ProcessedBlogPost {
   date: string;
   title: string;
   image: string;
-  description?: string;
+  description?: SanityBlock[]; // Changed to rich text array
   body?: SanityBlock[]; // Added body content for rich text
   slug: string | null;
 }
@@ -31,15 +31,31 @@ const BlogSection = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 3;
 
-  const { data: sanityPosts, isLoading } = useQuery({
+  const { data: sanityPosts, isLoading, error } = useQuery({
     queryKey: ['blog-posts-section'],
-    queryFn: () => client.fetch<BlogPost[]>(blogPostsQuery), // Get all posts for pagination
+    queryFn: async () => {
+      try {
+        const posts = await client.fetch<BlogPost[]>(blogPostsQuery);
+        console.log('✅ Fetched posts from Sanity:', posts?.length || 0);
+        return posts;
+      } catch (err) {
+        console.error('❌ Error fetching from Sanity:', err);
+        throw err;
+      }
+    },
+    // Prevent stale data - refetch on mount and window focus
+    staleTime: 0, // Always consider data stale
+    cacheTime: 0, // Don't cache data
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   // Debug logging
   console.log('🔍 Sanity Posts:', sanityPosts);
   console.log('📊 Posts Length:', sanityPosts?.length);
   console.log('⏳ Loading:', isLoading);
+  console.log('❌ Error:', error);
 
   // Extended fallback data for pagination demo
   const fallbackPosts: ProcessedBlogPost[] = [
@@ -153,17 +169,37 @@ const BlogSection = () => {
     },
   ];
 
-  // Use Sanity data if available, otherwise use fallback
-  const allPosts: ProcessedBlogPost[] = sanityPosts && sanityPosts.length > 0
-    ? sanityPosts.map(post => ({
-      date: format(new Date(post.publishedAt), "do MMMM yyyy"),
-      title: post.title,
-      image: post.image ? urlFor(post.image).width(400).height(225).url() : blogImage,
-      description: post.description,
-      body: post.body || post.content, // Use body field, fallback to content
-      slug: post.slug.current,
-    }))
-    : fallbackPosts;
+  // Use Sanity data if available, only use fallback if there's an error or no data after loading
+  const allPosts: ProcessedBlogPost[] = (() => {
+    // If we have Sanity posts, use them (even if empty array - means no posts published)
+    if (sanityPosts !== undefined) {
+      if (sanityPosts.length === 0) {
+        console.log('ℹ️ No blog posts found in Sanity. Showing empty state.');
+        return [];
+      }
+      return sanityPosts.map(post => ({
+        date: format(new Date(post.publishedAt), "do MMMM yyyy"),
+        title: post.title,
+        image: post.image ? urlFor(post.image).width(400).height(225).url() : blogImage,
+        description: post.description, // Now an array of blocks (rich text)
+        body: post.body || post.content, // Use body field, fallback to content
+        slug: post.slug?.current || null,
+      }));
+    }
+    
+    // Only use fallback if we're still loading (for initial render) or if there's an error
+    // Once loaded, if there's no data, show empty state instead of fallback
+    if (isLoading) {
+      return []; // Show loading state instead of fallback
+    }
+    
+    if (error) {
+      console.error('⚠️ Error loading blog posts, showing fallback:', error);
+      return fallbackPosts; // Only show fallback on error
+    }
+    
+    return []; // Default to empty if no data and not loading
+  })();
 
   // Pagination logic
   const totalPages = Math.ceil(allPosts.length / postsPerPage);

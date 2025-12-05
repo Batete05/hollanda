@@ -59,13 +59,11 @@ const ContactSection = () => {
 
               {/* Mobile */}
               <div>
-                <h3 className="font-bold font-barlow text-lg mb-4">Based In</h3>
+                <h3 className="font-bold font-barlow text-lg mb-4">Factory Address</h3>
                 <div className="space-y-1">
                   <p className="text-muted-foreground font-barlow">
-                    RWANDA – KIGALI Head Office
-                  </p>
-                  <p className="text-muted-foreground font-barlow">
-                    Warehouse: KG 173 st, Kigali-Remera
+                  Musanze, Karwasa, Gacaca, Cyanika Road
+
                   </p>
                 </div>
               </div>
@@ -78,11 +76,9 @@ const ContactSection = () => {
                     Opposite Grand Legacy Hotel
                   </p>
                   <p className="text-muted-foreground font-barlow">
-                    Main office: KG 622 st, House3
+                    Main office: KK 261 St
                   </p>
-                  <p className="text-muted-foreground font-barlow">
-                     Factory: Musanze Cyanika Road
-                  </p>
+                 
                 </div>
               </div>
             </div>

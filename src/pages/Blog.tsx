@@ -9,7 +9,21 @@ import { Link } from 'react-router-dom'
 const Blog = () => {
     const { data: posts, isLoading, error } = useQuery({
         queryKey: ['blog-posts'],
-        queryFn: () => client.fetch<BlogPost[]>(blogPostsQuery),
+        queryFn: async () => {
+            try {
+                const fetchedPosts = await client.fetch<BlogPost[]>(blogPostsQuery);
+                console.log('✅ Fetched posts from Sanity:', fetchedPosts?.length || 0);
+                return fetchedPosts;
+            } catch (err) {
+                console.error('❌ Error fetching from Sanity:', err);
+                throw err;
+            }
+        },
+        staleTime: 0,
+        cacheTime: 0,
+        refetchOnMount: true,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
     })
 
     if (isLoading) {
